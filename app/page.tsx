@@ -3,6 +3,72 @@
 import { useState } from "react";
 import { analyzeCode } from "./api/actions";
 
+function CodeBlock({ language, code }: { language: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="my-4 rounded-lg overflow-hidden bg-zinc-900 border border-zinc-700">
+      <div className="flex items-center justify-between px-4 py-2 bg-zinc-800 border-b border-zinc-700">
+        <span className="text-sm text-zinc-300">{language || "Code"}</span>
+        <button
+          onClick={handleCopy}
+          className="text-zinc-400 hover:text-white transition-colors"
+          aria-label="Copy code"
+        >
+          {copied ? (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          )}
+        </button>
+      </div>
+      <pre className="p-4 overflow-x-auto">
+        <code className="text-sm text-zinc-100 font-mono">{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function parseAndRenderResponse(response: string) {
+  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+
+  while ((match = codeBlockRegex.exec(response)) !== null) {
+    // Add text before the code block
+    if (match.index > lastIndex) {
+      const text = response.slice(lastIndex, match.index);
+      parts.push(<span key={key++} className="whitespace-pre-wrap">{text}</span>);
+    }
+
+    // Add the code block
+    const language = match[1] || "Code";
+    const code = match[2].trim();
+    parts.push(<CodeBlock key={key++} language={language} code={code} />);
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add any remaining text after the last code block
+  if (lastIndex < response.length) {
+    parts.push(<span key={key++} className="whitespace-pre-wrap">{response.slice(lastIndex)}</span>);
+  }
+
+  return parts.length > 0 ? parts : response;
+}
+
 export default function Home() {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [response, setResponse] = useState("");
@@ -69,8 +135,8 @@ export default function Home() {
             <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
               Analysis Result
             </h2>
-            <div className="w-full rounded-lg border border-zinc-300 bg-zinc-50 p-4 text-sm text-zinc-800 whitespace-pre-wrap dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
-              {response}
+            <div className="w-full rounded-lg border border-zinc-300 bg-zinc-50 p-4 text-sm text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
+              {parseAndRenderResponse(response)}
             </div>
           </div>
         )}
