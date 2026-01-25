@@ -1,5 +1,7 @@
 # Developer Assistant 🤖
 
+Link to site: https://developer-assistant-production.up.railway.app/
+
 Developer Assistant is a web app that analyzes code snippets using AI to:
 - Explain what the code does in plain English
 - Identify potential issues or improvements
