@@ -18,4 +18,6 @@ Built for developers who want faster feedback, better code quality, and clearer 
 - 🎨 Clean UI built with Next.js
 
 
-<img width="1076" height="594" alt="Developer Assistant Workflow" src="https://github.com/user-attachments/assets/782dab06-542f-4e23-9f05-679f5c553565" />
+<img width="1089" height="436" alt="Developer Assistant Workflow" src="https://github.com/user-attachments/assets/de1f7893-fafa-478f-a360-abbe534a9e8d" />
+
+<img width="1119" height="429" alt="claude snippet" src="https://github.com/user-attachments/assets/68790741-7963-454b-aaaf-d85561f6daf9" />
